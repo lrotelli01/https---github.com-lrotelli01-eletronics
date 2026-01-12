@@ -1,0 +1,8 @@
+# Reading pref.tcl
+# vsim -gui proj.mpf 
+# Start time: 16:52:18 on Jan 12,2026
+# ** Error (suppressible): (vsim-19) Failed to access library 'proj' at "proj".
+# No such file or directory. (errno = ENOENT)
+# Error loading design
+# End time: 16:52:18 on Jan 12,2026, Elapsed time: 0:00:00
+# Errors: 1, Warnings: 0

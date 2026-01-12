@@ -1,0 +1,26 @@
+# Reading pref.tcl
+# Loading project linear intepolator
+# Compile of linear_interpolator.vhdl was successful.
+# Compile of liear_interpolator_tb.vhdl was successful.
+# 2 compiles, 0 failed with no errors.
+# Compile of linear_interpolator.vhdl was successful.
+# Compile of liear_interpolator_tb.vhdl was successful.
+# 2 compiles, 0 failed with no errors.
+vsim -gui work.tb_linear_interpolator
+# vsim -gui work.tb_linear_interpolator 
+# Start time: 16:55:04 on Jan 12,2026
+# Loading std.standard
+# Loading std.textio(body)
+# Loading ieee.std_logic_1164(body)
+# Loading ieee.numeric_std(body)
+# Loading work.tb_linear_interpolator(testbench)
+# Loading work.linear_interpolator(rtl)
+run -all
+add wave -position insertpoint sim:/tb_linear_interpolator/*
+restart -f
+# ** Note: (vsim-12125) Error and warning message counts have been reset to '0' because of 'restart'.
+run -all
+write format wave -window .main_pane.wave.interior.cs.body.pw.wf /home/luca/Scaricati/work_env/work_env/modelsim/wave.do
+# ** Fatal: Unable to read lock file necessary for use of uncounted nodelocked license. Exiting.
+# End time: 17:00:05 on Jan 12,2026, Elapsed time: 0:05:01
+# Errors: 0, Warnings: 0

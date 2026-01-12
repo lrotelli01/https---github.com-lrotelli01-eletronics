@@ -1,0 +1,19 @@
+/home/luca/Scaricati/work_env/work_env/tb/liear_interpolator_tb.vhdl {1 {vcom -work work -2002 -explicit -stats=none /home/luca/Scaricati/work_env/work_env/tb/liear_interpolator_tb.vhdl
+Model Technology ModelSim - Intel FPGA Edition vcom 2020.1 Compiler 2020.02 Feb 28 2020
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Compiling entity tb_linear_interpolator
+-- Compiling architecture testbench of tb_linear_interpolator
+
+} {} {}} /home/luca/Scaricati/work_env/work_env/model/linear_interpolator.vhdl {1 {vcom -work work -2002 -explicit -stats=none /home/luca/Scaricati/work_env/work_env/model/linear_interpolator.vhdl
+Model Technology ModelSim - Intel FPGA Edition vcom 2020.1 Compiler 2020.02 Feb 28 2020
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Compiling entity linear_interpolator
+-- Compiling architecture rtl of linear_interpolator
+
+} {} {}}
