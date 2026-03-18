@@ -1,0 +1,54 @@
+\contentsline {section}{\numberline {1}Introduction}{3}{}%
+\contentsline {subsection}{\numberline {1.1}Problem Statement}{3}{}%
+\contentsline {subsection}{\numberline {1.2}Interface}{3}{}%
+\contentsline {section}{\numberline {2}State of the Art}{4}{}%
+\contentsline {subsection}{\numberline {2.1}Zero-Order Hold}{4}{}%
+\contentsline {subsection}{\numberline {2.2}Linear Interpolation}{4}{}%
+\contentsline {subsection}{\numberline {2.3}Higher-Order Polynomial and Spline Methods}{4}{}%
+\contentsline {subsection}{\numberline {2.4}FIR, Polyphase, and Farrow Structures}{5}{}%
+\contentsline {subsection}{\numberline {2.5}Hardware Considerations}{5}{}%
+\contentsline {subsection}{\numberline {2.6}Motivation for the Selected Architecture}{5}{}%
+\contentsline {section}{\numberline {3}Architecture}{6}{}%
+\contentsline {subsection}{\numberline {3.1}Overview}{6}{}%
+\contentsline {subsection}{\numberline {3.2}Block Diagram}{6}{}%
+\contentsline {subsection}{\numberline {3.3}Operation Principle}{7}{}%
+\contentsline {subsection}{\numberline {3.4}Arithmetic Precision}{7}{}%
+\contentsline {subsection}{\numberline {3.5}Pipeline Latency}{7}{}%
+\contentsline {section}{\numberline {4}VHDL Implementation}{8}{}%
+\contentsline {subsection}{\numberline {4.1}Entity Declaration}{8}{}%
+\contentsline {subsubsection}{\numberline {4.1.1}Port Description}{8}{}%
+\contentsline {subsubsection}{\numberline {4.1.2}Generic Parameters}{8}{}%
+\contentsline {subsection}{\numberline {4.2}Architecture Structure}{8}{}%
+\contentsline {subsubsection}{\numberline {4.2.1}Signal Declarations}{9}{}%
+\contentsline {subsection}{\numberline {4.3}Synchronous Process}{9}{}%
+\contentsline {subsection}{\numberline {4.4}Combinatorial Datapath}{9}{}%
+\contentsline {subsubsection}{\numberline {4.4.1}Arithmetic Details}{10}{}%
+\contentsline {subsection}{\numberline {4.5}Design Considerations}{10}{}%
+\contentsline {subsubsection}{\numberline {4.5.1}Overflow Prevention}{10}{}%
+\contentsline {subsection}{\numberline {4.6}State Machine}{11}{}%
+\contentsline {section}{\numberline {5}Verification}{12}{}%
+\contentsline {subsection}{\numberline {5.1}Test Strategy}{12}{}%
+\contentsline {subsection}{\numberline {5.2}Test Cases}{12}{}%
+\contentsline {subsection}{\numberline {5.3}Verification Methodology}{13}{}%
+\contentsline {subsubsection}{\numberline {5.3.1}Testbench Structure}{13}{}%
+\contentsline {subsubsection}{\numberline {5.3.2}Coverage Metrics}{15}{}%
+\contentsline {subsection}{\numberline {5.4}Simulation Results}{15}{}%
+\contentsline {subsubsection}{\numberline {5.4.1}Waveform Analysis}{15}{}%
+\contentsline {paragraph}{Key Observations from Cycle Analysis}{16}{}%
+\contentsline {subsubsection}{\numberline {5.4.2}Numerical Verification Examples}{16}{}%
+\contentsline {paragraph}{Example 1: Standard Positive Transition (1000 → 2000)}{16}{}%
+\contentsline {paragraph}{Example 2: Extreme Positive Jump (100 → 20000)}{17}{}%
+\contentsline {paragraph}{Example 3: Maximum Range Transition (32767 → -32768)}{17}{}%
+\contentsline {subsubsection}{\numberline {5.4.3}Performance Metrics}{17}{}%
+\contentsline {section}{\numberline {6}Synthesis Results}{18}{}%
+\contentsline {subsection}{\numberline {6.1}Target Device}{18}{}%
+\contentsline {subsection}{\numberline {6.2}Resource Utilization}{18}{}%
+\contentsline {subsection}{\numberline {6.3}Timing Analysis}{18}{}%
+\contentsline {subsubsection}{\numberline {6.3.1}Maximum Operating Frequency Calculation}{19}{}%
+\contentsline {subsubsection}{\numberline {6.3.2}I/O Register Barrier}{19}{}%
+\contentsline {subsection}{\numberline {6.4}Power Consumption}{20}{}%
+\contentsline {subsubsection}{\numberline {6.4.1}Power Analysis}{20}{}%
+\contentsline {subsection}{\numberline {6.5}Implementation Quality}{21}{}%
+\contentsline {subsubsection}{\numberline {6.5.1}Critical Path Analysis}{21}{}%
+\contentsline {section}{\numberline {7}Conclusions}{23}{}%
+\contentsline {subsection}{\numberline {7.1}Project Summary}{23}{}%
