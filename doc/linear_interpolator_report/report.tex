@@ -228,7 +228,7 @@ The computation uses extended precision internally to prevent overflow:
     \item \textbf{Output}: Lower 16 bits extracted
 \end{itemize}
 
-This approach handles the full input range without saturation logic. The 20-bit internal datapath provides safety margin over worst-case multiplication.
+This approach handles the worst-case intermediate arithmetic without overflow in the internal datapath. No explicit saturation stage is implemented at the output; instead, the registered result is obtained from the 16-bit slice used by the RTL.
 
 \subsection{Pipeline Latency}
 
@@ -384,7 +384,7 @@ dout <= std_logic_vector(r_dout);
     \item \textbf{20-bit Multiplication}: $17 \times 3 = 20$ bits, sufficient for range $\pm196605$
     \item \textbf{Arithmetic Shift}: Right shift by 2 with sign replication implements division by 4
     \item \textbf{20-bit Addition}: Current sample sign-extended to 20 bits, added to shifted result
-    \item \textbf{Truncation}: Lower 16 bits extracted for output (no saturation needed)
+    \item \textbf{Truncation}: Lower 16 bits extracted for output, with no explicit saturation stage
     \item \textbf{Output Register}: Result registered for proper reg-to-reg timing paths
 \end{enumerate}
 
@@ -437,7 +437,16 @@ The testbench verifies:
     \item \textbf{Large step transitions}: Maximum difference between samples
     \item \textbf{Boundary conditions}: Min/max value handling
     \item \textbf{Sign preservation}: Correct sign through computation
-    \item \textbf{Saturation}: Overflow handling at output
+    \item \textbf{Output range verification}: Correct behavior under extreme transitions with the implemented truncation-based output stage
+\end{itemize}
+
+\subsubsection{Validation Scenarios}
+
+The verification campaign can be grouped into three macro-scenarios:
+\begin{itemize}
+    \item \textbf{Initial behavior}: reset release, first-sample loading, and startup evolution before a full interpolation cycle is available
+    \item \textbf{Nominal behavior}: positive ramps, negative ramps, sign changes, and standard sample-to-sample transitions
+    \item \textbf{Boundary and stress behavior}: dead-zone cases, very small differences, large steps, and extreme signed transitions close to the numerical limits
 \end{itemize}
 
 \subsection{Test Cases}
@@ -503,9 +512,9 @@ Key test scenarios implemented:
     \begin{itemize}
         \item Input near maximum: 32000, 32700
         \item Input near minimum: -32000, -32700
-        \item Verify saturation logic
-        \item Check no overflow at output
-        \item Expected: Values clamp to [-32768, 32767]
+        \item Verify correct signed behavior close to the numerical limits
+        \item Check that intermediate arithmetic does not overflow
+        \item Expected: output values remain consistent with the interpolation law for the applied samples
     \end{itemize}
     
     \item \textbf{Test 8 - Sign Change Transition}
@@ -587,16 +596,16 @@ Key aspects of the testbench:
 
 Verification coverage achieved:
 \begin{itemize}
-    \item \textbf{Functional}: 100\% of specified operations tested
-    \item \textbf{Code}: All VHDL statements exercised
-    \item \textbf{State}: All counter states (0-3) verified
-    \item \textbf{Boundary}: Min/max values and transitions tested
-    \item \textbf{Corner Cases}: Dead zone, saturation, sign changes covered
+    \item \textbf{Functional}: representative operating conditions exercised, including ramps, sign changes, dead-zone cases, and large transitions
+    \item \textbf{Code}: all main datapath branches are stimulated by the testbench sequence
+    \item \textbf{State}: all counter states (0-3) are observed during simulation
+    \item \textbf{Boundary}: min/max values and wide transitions are included
+    \item \textbf{Corner Cases}: dead zone, extreme transitions, and sign changes are covered
 \end{itemize}
 
 \subsection{Simulation Results}
 
-All test cases passed successfully. The simulation confirmed:
+The executed testbench scenarios confirmed:
 \begin{itemize}
     \item Correct interpolation formula implementation
     \item Proper handling of edge cases
@@ -647,14 +656,14 @@ Figure \ref{fig:waveform} shows the complete simulation waveform with various te
         \item No accumulation of rounding errors across cycles
     \end{itemize}
     
-    \item \textbf{No Saturation Needed}: All test cases, including extreme transitions, produce mathematically correct outputs without requiring saturation logic. The output naturally stays within [-32768, 32767] when using 16-bit slicing of the 20-bit result.
+    \item \textbf{Output Truncation Behavior}: No dedicated saturation logic is present in the RTL. In the executed test scenarios, the 20-bit internal result is reduced to 16 bits through the implemented slicing stage, and the observed outputs remain valid for the considered cases.
     
     \item \textbf{Interpolation Quality}: Visual inspection of waveforms confirms smooth linear transitions without glitches, discontinuities, or unexpected behavior. The output follows the theoretical staircase pattern characteristic of linear interpolation with L=4.
 \end{enumerate}
 
 \subsubsection{Numerical Verification Examples}
 
-All test data have been validated and passed successfully. For brevity, some representative examples are reported below:
+Representative manually-checked examples are reported below:
 
 \paragraph{Example 1: Standard Positive Transition (1000 → 2000)}
 \begin{itemize}
@@ -690,10 +699,10 @@ All test data have been validated and passed successfully. For brevity, some rep
 
 Simulation performance:
 \begin{itemize}
-    \item Test duration: 100 clock cycles
-    \item All tests completed in <1ms simulation time
-    \item No warnings or errors from simulator
-    \item 100\% pass rate on all assertions
+    \item Testbench duration: about 160 clock cycles including reset and final observation window
+    \item Simulated time: about 1.6 $\mu$s at 10 ns clock period
+    \item Outputs are monitored cycle-by-cycle through \texttt{report} messages and waveform inspection
+    \item The current testbench is not self-checking: no \texttt{assert} statements are present
 \end{itemize}
 
 \newpage
@@ -701,9 +710,9 @@ Simulation performance:
 
 \subsection{Target Device}
 \begin{itemize}
-    \item FPGA: Xilinx Zynq-7010 (xc7z010iclg225-1L)
-    \item Speed Grade: -1L (industrial grade)
-    \item Package: CLG225
+    \item FPGA: Xilinx Zynq-7010 (\texttt{xc7z010clg400-1})
+    \item Speed Grade: -1
+    \item Package: CLG400
     \item Technology: 28nm process
 \end{itemize}
 
@@ -763,6 +772,7 @@ Key timing observations:
     \item No timing violations
     \item All paths meet the user-defined timing constraints
     \item Critical path: input register through arithmetic to output register
+    \item Vivado also reports unconstrained external input/output delays, which is expected because board-level interface timing is outside the scope of this project and only internal clocked behavior is being characterized
 \end{itemize}
 
 \subsubsection{Maximum Operating Frequency Calculation}
@@ -801,9 +811,9 @@ This implementation follows best practices for FPGA design, ensuring proper timi
 
 Power analysis results:
 \begin{itemize}
-    \item Total on-chip power: 95 mW
+    \item Total on-chip power: 109 mW
     \item Dynamic power: 17 mW
-    \item Static power: 78 mW
+    \item Static power: 92 mW
 
 \end{itemize}
 
@@ -826,32 +836,32 @@ Power analysis results:
 Power consumption breakdown:
 \begin{itemize}
     \item \textbf{Dynamic power (17 mW)}: Very low due to minimal design size (70 LUTs, 50 FFs) and few operations per clock cycle
-    \item \textbf{Static power (78 mW)}: Dominant component representing the base Zynq-7010 chip leakage power, always present regardless of logic activity
-    \item \textbf{Total (95 mW)}: Realistic sum for a minimal design on Zynq platform, where static leakage dominates over switching activity
+    \item \textbf{Static power (92 mW)}: Dominant component representing the base Zynq-7010 chip leakage power, always present regardless of logic activity
+    \item \textbf{Total (109 mW)}: Realistic sum for a minimal design on Zynq platform, where static leakage dominates over switching activity
 \end{itemize}
 
-The power profile is typical for small designs on Zynq SoCs, where the chip's baseline power consumption exceeds the design-specific dynamic power. Overall consumption is very low, suitable for battery-powered or thermally-constrained applications.
+The power profile is typical for small designs on Zynq SoCs, where the chip's baseline power consumption exceeds the design-specific dynamic power. Vivado reports a low confidence level because the estimate is vectorless and I/O activities were not back-annotated from simulation. Even so, the result is fully consistent with a very small logic design.
 
 \subsection{Implementation Quality}
 
 Synthesis reports:
 \begin{itemize}
-    \item No critical warnings
     \item No timing violations
-    
+    \item All user-specified timing constraints are met
+    \item The timing summary flags missing external input/output delays, consistently with the fact that no board-level interface constraints are required for this project
     \item 100\% routable design
 \end{itemize}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.9\textwidth]{syntesisys no error.png}
+\includegraphics[width=0.9\textwidth]{synthesis no error.png}
 \caption{Synthesis Completion - No Errors}
 \label{fig:synthesis}
 \end{figure}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.9\textwidth]{implementation.png}
+\includegraphics[width=0.9\textwidth]{Implementation.png}
 \caption{Implementation Results}
 \label{fig:implementation}
 \end{figure}
@@ -860,19 +870,21 @@ Synthesis reports:
 
 The critical path in the design:
 \begin{enumerate}
-    \item Source: Sample register (r\_y\_curr or r\_y\_next)
-    \item Through: sign extension, subtractor, LUT-based multiplier, arithmetic right shift, and final adder
-    \item Destination: Output register
+    \item Startpoint: \texttt{r\_y\_curr\_reg[1]/Q}
+    \item Endpoint: \texttt{r\_dout\_reg[13]/D}
+    \item Through: sign extension, subtraction, carry-chain based arithmetic, arithmetic right shift, and final accumulation
     \item The path is entirely implemented in logic fabric, consistently with the post-implementation report showing 0 DSP48 blocks used
-    \item The overall datapath delay is compatible with the positive timing slack reported in the previous subsection
+    \item The Report Timing data indicate a logic composition of 7 \texttt{CARRY4}, 1 \texttt{LUT1}, 2 \texttt{LUT2}, and 1 \texttt{LUT4}
+    \item Launch and capture both occur on the rising edge of \texttt{clk} with a 10 ns period, and the path satisfies timing with positive slack
 \end{enumerate}
 
-Path breakdown:
+Observed path characteristics:
 \begin{itemize}
-    \item Clock-to-Q: 0.5 ns
-    \item Logic delay: 1.5 ns
-    \item Net delay: 0.221 ns
-    \item Setup time: 0.1 ns
+    \item Worst-path slack consistent with Timing Summary: 2.819 ns
+    \item Data path delay: 7.180 ns, split into 4.549 ns logic delay and 2.631 ns routing delay
+    \item Logic depth: 11 levels
+    \item Arithmetic datapath mapped onto LUT and carry-chain resources, not DSP blocks
+    \item Critical path located between an internal sample register and the registered output stage
 \end{itemize}
 
 \begin{figure}[H]
@@ -901,7 +913,7 @@ The architecture was then translated into VHDL code, implementing the entity wit
 
 Comprehensive testing of the VHDL code was conducted through 37 test cases covering all operating conditions: positive and negative ramps, dead-zone scenarios with minimal differences, large transitions, and extreme overflow stress tests. Cycle-by-cycle verification confirmed correct interpolation formula implementation, proper signed arithmetic, and absence of overflow in the extended precision datapath.
 
-Finally, the circuit was synthesized and implemented using Vivado 2020.2 targeting the Xilinx Zynq-7010 FPGA. Post-implementation analysis revealed excellent characteristics: minimal resource utilization (70 LUTs, 50 FFs, 0 DSP blocks), positive timing slack of 2.819ns at 100 MHz target frequency (28.19\% margin), and low power consumption (~100 mW). Through this process, the functionality and performance of the Linear Interpolator were thoroughly assessed, confirming that the design meets the timing target with clean closure and no critical warnings.
+Finally, the circuit was synthesized and implemented using Vivado 2020.2 targeting the Xilinx Zynq-7010 FPGA. Post-implementation analysis revealed excellent characteristics: minimal resource utilization (70 LUTs, 50 FFs, 0 DSP blocks), positive timing slack of 2.819ns at 100 MHz target frequency (28.19\% margin), and low power consumption of about 109 mW. Through this process, the functionality and performance of the Linear Interpolator were thoroughly assessed, confirming that the design meets the timing target with clean closure. Vivado still reports unconstrained external I/O delays, but this is expected because full board-level integration is intentionally outside the scope of the present project.
 
 \subsection{Project Summary}
 
@@ -909,9 +921,9 @@ The linear interpolator design successfully meets all specifications:
 \begin{itemize}
     \item \textbf{Functionally correct}: Implementation verified through comprehensive simulation
     \item \textbf{Resource efficient}: Minimal utilization 
-    \item \textbf{Low power}: ~100 mW total consumption
+    \item \textbf{Low power}: about 109 mW total consumption
     \item \textbf{High performance}: High clock frequency 
-    \item \textbf{Production ready}: Clean synthesis with no warnings, ready for FPGA deployment
+    \item \textbf{Implementation closed}: Timing met at 100 MHz with positive slack
     \item \textbf{Scalable}: Robust design 
 \end{itemize}
 \end{document}

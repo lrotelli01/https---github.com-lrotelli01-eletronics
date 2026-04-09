@@ -162,16 +162,16 @@ INPUT ./power_graph.png
 INPUT ./power_graph.png
 INPUT ./power_graph.png
 INPUT ./power_graph.png
-INPUT ./syntesisys no error.png
-INPUT ./syntesisys no error.png
-INPUT ./syntesisys no error.png
-INPUT ./syntesisys no error.png
-INPUT ./syntesisys no error.png
-INPUT ./implementation.png
-INPUT ./implementation.png
-INPUT ./implementation.png
-INPUT ./implementation.png
-INPUT ./implementation.png
+INPUT ./synthesis no error.png
+INPUT ./synthesis no error.png
+INPUT ./synthesis no error.png
+INPUT ./synthesis no error.png
+INPUT ./synthesis no error.png
+INPUT ./Implementation.png
+INPUT ./Implementation.png
+INPUT ./Implementation.png
+INPUT ./Implementation.png
+INPUT ./Implementation.png
 INPUT ./critical_path.png
 INPUT ./critical_path.png
 INPUT ./critical_path.png
